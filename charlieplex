@@ -1,0 +1,336 @@
+
+void set(int pin, int state);
+void set_all_pins(int s1,int s2,int s3, int s4);
+void light_up(int on_time, int off_time, int s1,int s2,int s3, int s4);
+void functionX(int r1, int g1, int b1, int r2, int g2, int b2, int r3, int g3, int b3, int r4, int g4, int b4);
+void fxloop(int loops, int r1, int g1, int b1, int r2, int g2, int b2, int r3, int g3, int b3, int r4, int g4, int b4);
+void cycle1(int loops);
+void cycle1(int loops);
+void cycle1(int loops);
+void cycle1(int loops);
+void cycle1(int loops);
+void cycle1(int loops);
+void cycle1(int loops);
+
+// connection pins
+int pin1 = 8;
+int pin2 = 9;
+int pin3 = 10;
+int pin4 = 11;
+
+void setup() {
+  // disconnect all pins
+  pinMode(pin1,INPUT);
+  pinMode(pin2,INPUT);
+  pinMode(pin3,INPUT);
+  pinMode(pin4,INPUT);
+  randomSeed(analogRead(0));
+}
+
+void loop() {
+  cycle1(2);
+  cycle2(2);
+  cycle3a(2);
+  cycle4(5);
+  cycle5(4);
+  cycle7(2);
+  cycle4(6);
+}
+
+
+
+//set pin to 1 of 3 states. -1 is disconnected, 0 is -, and 1 is +
+void set(int pin, int state){
+  if (state == -1){
+    pinMode(pin,INPUT);
+  }
+  else if (state == 0){
+    pinMode(pin,OUTPUT);
+    digitalWrite(pin,LOW);
+  }
+  else{
+    pinMode(pin,OUTPUT);
+    digitalWrite(pin,HIGH);
+  }
+  return;
+}
+
+// set all pins to their states. -1 is disconnected, 0 is -, and 1 is +
+void set_all_pins(int s1,int s2,int s3, int s4){
+  set(pin1,s1);
+  set(pin2,s2);
+  set(pin3,s3);
+  set(pin4,s4);
+  return;
+}
+
+
+// helps a lot with functionX
+// basically u put in the on and off time in microseconds and the pin values, and it will set the pins for those times
+void light_up(int on_time, int off_time, int s1,int s2,int s3, int s4){
+  if (on_time != 0){
+    set_all_pins(s1,s2,s3,s4);
+    delayMicroseconds(on_time);
+  }
+  set_all_pins(-1,-1,-1,-1);
+  delayMicroseconds(off_time);
+}
+
+
+// this is the main workhorse where it brings it all together
+// this function takes 0 - 100 for each value of red, green, and blue and signals pins 1 - 4 respectively for 1 cycle
+void functionX(int r1, int g1, int b1, int r2, int g2, int b2, int r3, int g3, int b3, int r4, int g4, int b4){
+  // find on and off times for all r's, g's, and b's
+  int r1on = (10 * r1) / 4;
+  int r1off = 250 - r1on;
+  int r2on = (10 * r2) / 4;
+  int r2off = 250 - r2on;
+  int r3on = (10 * r3) / 4;
+  int r3off = 250 - r3on;
+  int r4on = (10 * r4) / 4;
+  int r4off = 250 - r4on;
+  int g1on = (10 * g1) / 4;
+  int g1off = 250 - g1on;
+  int g2on = (10 * g2) / 4;
+  int g2off = 250 - g2on;
+  int g3on = (10 * g3) / 4;
+  int g3off = 250 - g3on;
+  int g4on = (10 * g4) / 4;
+  int g4off = 250 - g4on;
+  int b1on = (10 * b1) / 4;
+  int b1off = 250 - b1on;
+  int b2on = (10 * b2) / 4;
+  int b2off = 250 - b2on;
+  int b3on = (10 * b3) / 4;
+  int b3off = 250 - b3on;
+  int b4on = (10 * b4) / 4;
+  int b4off = 250 - b4on;
+
+  // send all pin signals based on circuit diagram
+  light_up(r1on,r1off,1,0,-1,-1); // red   1
+  light_up(g1on,g1off,1,-1,0,-1); // green 1
+  light_up(b1on,b1off,1,-1,-1,0); // blue  1
+  light_up(r2on,r2off,-1,1,0,-1); // red   2
+  light_up(g2on,g2off,-1,1,-1,0); // green 2
+  light_up(b2on,b2off,0,1,-1,-1); // blue  2
+  light_up(r3on,r3off,-1,-1,1,0); // red   3
+  light_up(g3on,g3off,-1,0,1,-1); // green 3
+  light_up(b3on,b3off,0,-1,1,-1); // blue  3
+  light_up(r4on,r4off,-1,-1,0,1); // red   4
+  light_up(g4on,g4off,-1,0,-1,1); // green 4
+  light_up(b4on,b4off,0,-1,-1,1); // blue  4
+  return;
+}
+
+//functionX with specified loop count
+void fxloop(int loops, int r1, int g1, int b1, int r2, int g2, int b2, int r3, int g3, int b3, int r4, int g4, int b4){
+  for (int n = 0; n < loops; n++){
+    functionX(r1,g1,b1,r2,g2,b2,r3,g3,b3,r4,g4,b4);
+  }
+  return;
+}
+
+
+
+// cycles
+void cycle1(int loops){
+  for (int n = 0; n < loops; n++){
+  int dt = 20;
+  for (int n = 0; n < dt; n++){
+    functionX(100,0,0,0,0,0,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,100,0,0,0,0,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,100,0,0,0,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,100,0,0,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,100,0,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,100,0,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,100,0,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,0,100,0,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,0,0,100,0,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,0,0,0,100,0,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,0,0,0,0,100,0);
+  }
+  for (int n = 0; n < dt; n++){
+    functionX(0,0,0,0,0,0,0,0,0,0,0,100);
+  }
+  }
+}
+
+void cycle2(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 10;
+  int on = 100; // brightness of on
+  fxloop(loops,on,0,0, 0,on,0, 0,on,0, 0,on,0);
+  fxloop(loops,on,0,0, on,0,0, 0,on,0, 0,on,0);
+  fxloop(loops,on,0,0, on,0,0, on,0,0, 0,on,0);
+  fxloop(loops*5,on,0,0, on,0,0, on,0,0, on,0,0);// all red
+  fxloop(loops,0,0,on, on,0,0, on,0,0, on,0,0);
+  fxloop(loops,0,0,on, 0,0,on, on,0,0, on,0,0);
+  fxloop(loops,0,0,on, 0,0,on, 0,0,on, on,0,0);
+  fxloop(loops*5,0,0,on, 0,0,on, 0,0,on, 0,0,on); // all blue
+  fxloop(loops,0,on,0, 0,0,on, 0,0,on, 0,0,on);
+  fxloop(loops,0,on,0, 0,on,0, 0,0,on, 0,0,on);
+  fxloop(loops,0,on,0, 0,on,0, 0,on,0, 0,0,on);
+  fxloop(loops*5,0,on,0, 0,on,0, 0,on,0, 0,on,0); // all green
+  }
+}
+
+
+void cycle3a(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 15;
+    int on = 100;
+    fxloop(loops,0,on,0, 0,0, 0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,on, 0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0, 0, 0,on,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0, 0, 0,0,0, 0,on,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,on, 0,0,0, 0,0,0, 0,0,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,on, 0,0,on, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,on, 0,0,0, 0,0,0, 0,0,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,on, 0,0,on, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    
+  }
+  return;
+}
+
+
+void cycle3(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 15;
+    int on = 100;
+    fxloop(loops,on,0,0, on,0, 0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,0,0, on,0, 0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0, 0, 0,0,on, 0,0,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0, 0, 0,0,on, 0,0,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,on, 0,0,on, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,on, 0,0,on, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, on,0,0, on,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, on,0,0, on,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,on,on,on,on,on,on,on,on,on,on,on,on);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, 0,0,0);
+  }
+  return;
+}
+
+void cycle4(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 30;
+    int on = 100;
+    fxloop(loops, on,0,0, 0,on,0, on,0,0, 0,on,0);
+    fxloop(loops, 0,on,0, on,0,0, 0,on,0, on,0,0);
+  }
+  return;
+ }
+
+ void cycle5(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 25;
+    int on = 100;
+    int on2 =10;
+    fxloop(loops,on,0,on2, 0,0,0, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, on,0,on2, 0,0,0, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, on,0,on2, 0,0,0);
+    fxloop(loops,0,0,0, 0,0,0, 0,0,0, on,0,on2);
+  }
+ }
+
+ void cycle6(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 5;
+    
+    for (int m = 0; m < 101; m++){
+      fxloop(loops, m,0,100-m, m,0,100-m, m,0,100-m, m,0,100-m);
+    }
+    for (int m = 0; m < 101; m++){
+      fxloop(loops, 100-m,m,0, 100-m,m,0, 100-m,m,0, 100-m,m,0);
+    }
+    for (int m = 0; m < 101; m++){
+      fxloop(loops, 0,100-m,m, 0,100-m,m, 0,100-m,m, 0,100-m,m);
+    }
+
+  }
+ }
+
+
+
+
+
+// color 1s are fill color
+// color 2s are background color
+void fill_left(int loops, int r1, int g1, int b1, int r2, int g2, int b2){
+  fxloop(loops, r2,g2,b2,   r2,g2,b2,  r2,g2,b2,  r2,g2,b2);
+  fxloop(loops, r1,g1,b1,   r2,g2,b2,  r2,g2,b2,  r2,g2,b2);
+  fxloop(loops, r1,g1,b1,   r1,g1,b1,  r2,g2,b2,  r2,g2,b2);
+  fxloop(loops, r1,g1,b1,   r1,g1,b1,  r1,g1,b1,  r2,g2,b2);
+  fxloop(loops, r1,g1,b1,   r1,g1,b1,  r1,g1,b1,  r1,g1,b1);
+  return;
+}
+void fill_right(int loops, int r1, int g1, int b1, int r2, int g2, int b2){
+  fxloop(loops, r2,g2,b2,   r2,g2,b2,  r2,g2,b2,  r2,g2,b2);
+  fxloop(loops, r2,g2,b2,   r2,g2,b2,  r2,g2,b2,  r1,g1,b1);
+  fxloop(loops, r2,g2,b2,   r2,g2,b2,  r1,g1,b1,  r1,g1,b1);
+  fxloop(loops, r2,g2,b2,   r1,g1,b1,  r1,g1,b1,  r1,g1,b1);
+  fxloop(loops, r1,g1,b1,   r1,g1,b1,  r1,g1,b1,  r1,g1,b1);
+  return;
+}
+ void cycle7(int loops1){
+  for (int n = 0; n < loops1; n++){
+    int loops = 15;
+    fill_left(loops, 100,0,0, 0,0,100);
+    fill_right(loops, 0,100,0, 100,0,0);
+    fill_left(loops, 100,0,10, 0,100,0);
+    fill_right(loops, 100,50,0, 100,0,10);
+    fill_left(loops, 100,100,100, 100,50,0);
+    fill_right(loops, 0,0,100, 100,100,100);
+  }
+  return;
+ }
